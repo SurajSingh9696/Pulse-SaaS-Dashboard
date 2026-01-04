@@ -23,9 +23,7 @@
     "react": "^19.2.3",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.3",
-    "react-hot-toast": "^2.6.0"
-  },
-  "devDependencies": {
+    "react-hot-toast": "^2.6.0",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.1",
     "postcss": "^8.5.6",
