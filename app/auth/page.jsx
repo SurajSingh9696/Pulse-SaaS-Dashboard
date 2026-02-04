@@ -5,14 +5,15 @@ import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import { authData } from '@/lib/data/authData';
-import { Mail, Lock, User, CheckCircle, Layers } from 'lucide-react';
+import { Mail, Lock, User, CheckCircle, Layers, Activity } from 'lucide-react';
 
 const iconMap = {
   mail: Mail,
   lock: Lock,
   user: User,
   'check-circle': CheckCircle,
-  layers: Layers
+  layers: Layers,
+  activity: Activity
 };
 
 export default function AuthPage() {
