@@ -398,57 +398,108 @@ export default function AdminPage() {
 
   const renderSettings = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">System Settings</h3>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-indigo-100 rounded-xl">
+            <Icons.Settings className="w-6 h-6 text-indigo-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">System Settings</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Configure platform-wide controls</p>
+          </div>
+        </div>
         {systemSettings ? (
           <div className="space-y-4">
-            <label className="flex items-center justify-between p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <div>
-                <span className="text-sm font-medium text-gray-900">Maintenance Mode</span>
-                <p className="text-xs text-gray-600 mt-1">Enable to prevent users from accessing the platform</p>
+            <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 p-5 transition-all hover:shadow-md hover:border-amber-300">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="mt-1 p-2 bg-amber-100 rounded-lg">
+                    <Icons.AlertTriangle className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-base font-semibold text-slate-900 block">Maintenance Mode</span>
+                    <p className="text-sm text-slate-600 mt-1">Enable to prevent users from accessing the platform</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={systemSettings.maintenanceMode}
+                  onClick={() => {
+                    const updated = {
+                      ...systemSettings,
+                      maintenanceMode: !systemSettings.maintenanceMode
+                    };
+                    setSystemSettings(updated);
+                    handleSettingsUpdate({ systemSettings: updated });
+                  }}
+                  className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                    systemSettings.maintenanceMode ? 'bg-amber-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                      systemSettings.maintenanceMode ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
-              <input
-                type="checkbox"
-                checked={systemSettings.maintenanceMode}
-                onChange={(e) => {
-                  const updated = {
-                    ...systemSettings,
-                    maintenanceMode: e.target.checked
-                  };
-                  setSystemSettings(updated);
-                  handleSettingsUpdate({ systemSettings: updated });
-                }}
-                className="rounded text-indigo-600 h-5 w-5"
-              />
-            </label>
-            <label className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div>
-                <span className="text-sm font-medium text-gray-900">Pause Registration</span>
-                <p className="text-xs text-gray-600 mt-1">Temporarily disable new user signups</p>
+            </div>
+            <div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 p-5 transition-all hover:shadow-md hover:border-blue-300">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="mt-1 p-2 bg-blue-100 rounded-lg">
+                    <Icons.UserX className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-base font-semibold text-slate-900 block">Pause Registration</span>
+                    <p className="text-sm text-slate-600 mt-1">Temporarily disable new user signups</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={systemSettings.registrationPaused}
+                  onClick={() => {
+                    const updated = {
+                      ...systemSettings,
+                      registrationPaused: !systemSettings.registrationPaused
+                    };
+                    setSystemSettings(updated);
+                    handleSettingsUpdate({ systemSettings: updated });
+                  }}
+                  className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                    systemSettings.registrationPaused ? 'bg-blue-500' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                      systemSettings.registrationPaused ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
               </div>
-              <input
-                type="checkbox"
-                checked={systemSettings.registrationPaused}
-                onChange={(e) => {
-                  const updated = {
-                    ...systemSettings,
-                    registrationPaused: e.target.checked
-                  };
-                  setSystemSettings(updated);
-                  handleSettingsUpdate({ systemSettings: updated });
-                }}
-                className="rounded text-indigo-600 h-5 w-5"
-              />
-            </label>
+            </div>
           </div>
         ) : (
-          <p className="text-gray-500">Loading system settings...</p>
+          <div className="flex items-center justify-center py-8">
+            <Icons.Loader2 className="w-6 h-6 animate-spin text-indigo-600 mr-3" />
+            <p className="text-slate-500">Loading system settings...</p>
+          </div>
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Ban User by Email</h3>
-        <p className="text-sm text-gray-600 mb-6">Permanently delete a user and all their associated data by entering their email address.</p>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-rose-100 rounded-xl">
+            <Icons.ShieldAlert className="w-6 h-6 text-rose-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Ban User by Email</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Danger zone - irreversible action</p>
+          </div>
+        </div>
+        <p className="text-sm text-slate-600 mb-6">Permanently delete a user and all their associated data by entering their email address.</p>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">User Email Address</label>

@@ -484,181 +484,296 @@ export default function UserPage() {
 
   const renderSettings = () => (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Notification Settings</h3>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-blue-100 rounded-xl">
+            <Icons.Bell className="w-6 h-6 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Notification Settings</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Control how you receive updates</p>
+          </div>
+        </div>
         {settings ? (
-          <div className="space-y-4">
-            <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Email Notifications</span>
-              <input
-                type="checkbox"
-                checked={settings.notifications?.email}
-                onChange={(e) => {
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                  <Icons.Mail className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-slate-900 block">Email Notifications</span>
+                  <span className="text-xs text-slate-500">Receive updates via email</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.notifications?.email}
+                onClick={() => {
                   const updated = {
                     ...settings,
-                    notifications: { ...settings.notifications, email: e.target.checked }
+                    notifications: { ...settings.notifications, email: !settings.notifications?.email }
                   };
                   setSettings(updated);
                   handleSettingsUpdate(updated);
                 }}
-                className="rounded text-indigo-600"
-              />
-            </label>
-            <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Order Updates</span>
-              <input
-                type="checkbox"
-                checked={settings.notifications?.orderUpdates}
-                onChange={(e) => {
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  settings.notifications?.email ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                    settings.notifications?.email ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                  <Icons.ShoppingBag className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-slate-900 block">Order Updates</span>
+                  <span className="text-xs text-slate-500">Get notified about order status</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.notifications?.orderUpdates}
+                onClick={() => {
                   const updated = {
                     ...settings,
-                    notifications: { ...settings.notifications, orderUpdates: e.target.checked }
+                    notifications: { ...settings.notifications, orderUpdates: !settings.notifications?.orderUpdates }
                   };
                   setSettings(updated);
                   handleSettingsUpdate(updated);
                 }}
-                className="rounded text-indigo-600"
-              />
-            </label>
-            <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Newsletter</span>
-              <input
-                type="checkbox"
-                checked={settings.notifications?.newsletter}
-                onChange={(e) => {
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  settings.notifications?.orderUpdates ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                    settings.notifications?.orderUpdates ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-sm transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg group-hover:bg-blue-100 transition-colors">
+                  <Icons.Newspaper className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-slate-900 block">Newsletter</span>
+                  <span className="text-xs text-slate-500">Product updates and tips</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.notifications?.newsletter}
+                onClick={() => {
                   const updated = {
                     ...settings,
-                    notifications: { ...settings.notifications, newsletter: e.target.checked }
+                    notifications: { ...settings.notifications, newsletter: !settings.notifications?.newsletter }
                   };
                   setSettings(updated);
                   handleSettingsUpdate(updated);
                 }}
-                className="rounded text-indigo-600"
-              />
-            </label>
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  settings.notifications?.newsletter ? 'bg-blue-600' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                    settings.notifications?.newsletter ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         ) : (
-          <p className="text-gray-500">Loading settings...</p>
-        )}
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Privacy Settings</h3>
-        {settings && (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Profile Visibility</label>
-              <select
-                value={settings.privacy?.profileVisibility}
-                onChange={(e) => {
-                  const updated = {
-                    ...settings,
-                    privacy: { ...settings.privacy, profileVisibility: e.target.value }
-                  };
-                  setSettings(updated);
-                  handleSettingsUpdate(updated);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="private">Private</option>
-                <option value="public">Public</option>
-              </select>
-            </div>
-            <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-700">Show Email</span>
-              <input
-                type="checkbox"
-                checked={settings.privacy?.showEmail}
-                onChange={(e) => {
-                  const updated = {
-                    ...settings,
-                    privacy: { ...settings.privacy, showEmail: e.target.checked }
-                  };
-                  setSettings(updated);
-                  handleSettingsUpdate(updated);
-                }}
-                className="rounded text-indigo-600"
-              />
-            </label>
+          <div className="flex items-center justify-center py-8">
+            <Icons.Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-3" />
+            <p className="text-slate-500">Loading settings...</p>
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Preferences</h3>
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-purple-100 rounded-xl">
+            <Icons.Shield className="w-6 h-6 text-purple-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Privacy Settings</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Manage your data visibility</p>
+          </div>
+        </div>
         {settings && (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Language</label>
-              <select
-                value={settings.preferences?.language || 'en'}
-                onChange={(e) => {
-                  const updated = {
-                    ...settings,
-                    preferences: { ...settings.preferences, language: e.target.value }
-                  };
-                  setSettings(updated);
-                  handleSettingsUpdate(updated);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-                <option value="de">German</option>
-                <option value="zh">Chinese</option>
-                <option value="ja">Japanese</option>
-              </select>
+            <div className="p-4 rounded-xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-sm transition-all">
+              <label className="block">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icons.Eye className="w-4 h-4 text-purple-600" />
+                  <span className="text-sm font-semibold text-slate-900">Profile Visibility</span>
+                </div>
+                <select
+                  value={settings.privacy?.profileVisibility}
+                  onChange={(e) => {
+                    const updated = {
+                      ...settings,
+                      privacy: { ...settings.privacy, profileVisibility: e.target.value }
+                    };
+                    setSettings(updated);
+                    handleSettingsUpdate(updated);
+                  }}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white text-slate-900 font-medium transition-all"
+                >
+                  <option value="private">🔒 Private</option>
+                  <option value="public">🌐 Public</option>
+                </select>
+              </label>
             </div>
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Timezone</label>
-              <select
-                value={settings.preferences?.timezone || 'UTC'}
-                onChange={(e) => {
+            <div className="flex items-center justify-between p-4 rounded-xl bg-white border border-slate-200 hover:border-purple-300 hover:shadow-sm transition-all group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-purple-50 rounded-lg group-hover:bg-purple-100 transition-colors">
+                  <Icons.AtSign className="w-4 h-4 text-purple-600" />
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-slate-900 block">Show Email</span>
+                  <span className="text-xs text-slate-500">Display email on public profile</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.privacy?.showEmail}
+                onClick={() => {
                   const updated = {
                     ...settings,
-                    preferences: { ...settings.preferences, timezone: e.target.value }
+                    privacy: { ...settings.privacy, showEmail: !settings.privacy?.showEmail }
                   };
                   setSettings(updated);
                   handleSettingsUpdate(updated);
                 }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+                  settings.privacy?.showEmail ? 'bg-purple-600' : 'bg-slate-300'
+                }`}
               >
-                <option value="UTC">UTC</option>
-                <option value="America/New_York">Eastern Time (ET)</option>
-                <option value="America/Chicago">Central Time (CT)</option>
-                <option value="America/Denver">Mountain Time (MT)</option>
-                <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                <option value="Europe/London">London (GMT)</option>
-                <option value="Europe/Paris">Paris (CET)</option>
-                <option value="Asia/Tokyo">Tokyo (JST)</option>
-                <option value="Asia/Shanghai">Shanghai (CST)</option>
-                <option value="Australia/Sydney">Sydney (AEDT)</option>
-              </select>
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-300 ease-in-out ${
+                    settings.privacy?.showEmail ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
             </div>
-            <div>
-              <label className="block text-sm text-gray-700 mb-2">Currency</label>
-              <select
-                value={settings.preferences?.currency || 'USD'}
-                onChange={(e) => {
-                  const updated = {
-                    ...settings,
-                    preferences: { ...settings.preferences, currency: e.target.value }
-                  };
-                  setSettings(updated);
-                  handleSettingsUpdate(updated);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="USD">USD - US Dollar</option>
-                <option value="EUR">EUR - Euro</option>
-                <option value="GBP">GBP - British Pound</option>
-                <option value="JPY">JPY - Japanese Yen</option>
-                <option value="CNY">CNY - Chinese Yuan</option>
-                <option value="INR">INR - Indian Rupee</option>
-                <option value="AUD">AUD - Australian Dollar</option>
-                <option value="CAD">CAD - Canadian Dollar</option>
-              </select>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-lg border border-slate-200 p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-emerald-100 rounded-xl">
+            <Icons.Sliders className="w-6 h-6 text-emerald-600" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Preferences</h3>
+            <p className="text-xs text-slate-500 mt-0.5">Customize your experience</p>
+          </div>
+        </div>
+        {settings && (
+          <div className="space-y-4">
+            <div className="p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
+              <label className="block">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icons.Languages className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-slate-900">Language</span>
+                </div>
+                <select
+                  value={settings.preferences?.language || 'en'}
+                  onChange={(e) => {
+                    const updated = {
+                      ...settings,
+                      preferences: { ...settings.preferences, language: e.target.value }
+                    };
+                    setSettings(updated);
+                    handleSettingsUpdate(updated);
+                  }}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-slate-900 font-medium transition-all"
+                >
+                  <option value="en">🇺🇸 English</option>
+                  <option value="es">🇪🇸 Spanish</option>
+                  <option value="fr">🇫🇷 French</option>
+                  <option value="de">🇩🇪 German</option>
+                  <option value="zh">🇨🇳 Chinese</option>
+                  <option value="ja">🇯🇵 Japanese</option>
+                </select>
+              </label>
+            </div>
+            <div className="p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
+              <label className="block">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icons.Clock className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-slate-900">Timezone</span>
+                </div>
+                <select
+                  value={settings.preferences?.timezone || 'UTC'}
+                  onChange={(e) => {
+                    const updated = {
+                      ...settings,
+                      preferences: { ...settings.preferences, timezone: e.target.value }
+                    };
+                    setSettings(updated);
+                    handleSettingsUpdate(updated);
+                  }}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-slate-900 font-medium transition-all"
+                >
+                  <option value="UTC">🌍 UTC</option>
+                  <option value="America/New_York">🇺🇸 Eastern Time (ET)</option>
+                  <option value="America/Chicago">🇺🇸 Central Time (CT)</option>
+                  <option value="America/Denver">🇺🇸 Mountain Time (MT)</option>
+                  <option value="America/Los_Angeles">🇺🇸 Pacific Time (PT)</option>
+                  <option value="Europe/London">🇬🇧 London (GMT)</option>
+                  <option value="Europe/Paris">🇫🇷 Paris (CET)</option>
+                  <option value="Asia/Tokyo">🇯🇵 Tokyo (JST)</option>
+                  <option value="Asia/Shanghai">🇨🇳 Shanghai (CST)</option>
+                  <option value="Australia/Sydney">🇦🇺 Sydney (AEDT)</option>
+                </select>
+              </label>
+            </div>
+            <div className="p-4 rounded-xl bg-white border border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all">
+              <label className="block">
+                <div className="flex items-center gap-2 mb-3">
+                  <Icons.DollarSign className="w-4 h-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-slate-900">Currency</span>
+                </div>
+                <select
+                  value={settings.preferences?.currency || 'USD'}
+                  onChange={(e) => {
+                    const updated = {
+                      ...settings,
+                      preferences: { ...settings.preferences, currency: e.target.value }
+                    };
+                    setSettings(updated);
+                    handleSettingsUpdate(updated);
+                  }}
+                  className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white text-slate-900 font-medium transition-all"
+                >
+                  <option value="USD">💵 USD - US Dollar</option>
+                  <option value="EUR">💶 EUR - Euro</option>
+                  <option value="GBP">💷 GBP - British Pound</option>
+                  <option value="JPY">💴 JPY - Japanese Yen</option>
+                  <option value="CNY">💴 CNY - Chinese Yuan</option>
+                  <option value="INR">💸 INR - Indian Rupee</option>
+                  <option value="AUD">💵 AUD - Australian Dollar</option>
+                  <option value="CAD">💵 CAD - Canadian Dollar</option>
+                </select>
+              </label>
             </div>
           </div>
         )}
