@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import * as Icons from 'lucide-react';
@@ -61,6 +61,34 @@ export default function AdminPage() {
   const [systemSettings, setSystemSettings] = useState(null);
   const [banningUser, setBanningUser] = useState(null);
   const [banUserEmail, setBanUserEmail] = useState('');
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 'notif-1',
+      title: 'New enterprise signup',
+      description: 'Apex Logistics upgraded to Enterprise plan.',
+      time: '2m ago',
+      read: false,
+      type: 'success'
+    },
+    {
+      id: 'notif-2',
+      title: 'Payout scheduled',
+      description: 'Next payout scheduled for Feb 7, 2026.',
+      time: '1h ago',
+      read: false,
+      type: 'info'
+    },
+    {
+      id: 'notif-3',
+      title: 'System update',
+      description: 'Maintenance window completed successfully.',
+      time: 'Yesterday',
+      read: true,
+      type: 'neutral'
+    }
+  ]);
+  const notificationRef = useRef(null);
 
   useEffect(() => {
     checkAuth();
@@ -71,6 +99,19 @@ export default function AdminPage() {
       fetchData(activeTab);
     }
   }, [activeTab, admin]);
+
+  useEffect(() => {
+    if (!notificationOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notificationOpen]);
 
   const checkAuth = async () => {
     try {
@@ -295,6 +336,29 @@ export default function AdminPage() {
     }
   };
 
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+  const markAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+  };
+
+  const markNotificationRead = (id) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
+
+  const notificationAccent = (type) => {
+    const accents = {
+      success: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+      info: 'bg-blue-50 text-blue-700 ring-blue-200',
+      neutral: 'bg-slate-50 text-slate-700 ring-slate-200'
+    };
+    return accents[type] || accents.neutral;
+  };
+
   const handleLogout = async () => {
     setLoggingOut(true);
     try {
@@ -457,6 +521,53 @@ export default function AdminPage() {
           ))}
         </div>
       )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-indigo-100">System health</p>
+              <h4 className="text-2xl font-semibold mt-2">All systems operational</h4>
+              <p className="text-xs text-indigo-100 mt-2">Last checked: just now</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+              <Icons.Activity className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Quick actions</h3>
+              <p className="text-xs text-slate-500">Jump to common admin tasks</p>
+            </div>
+            <Icons.Zap className="w-5 h-5 text-indigo-500" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              onClick={() => setActiveTab('users')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">Review users</span>
+              <Icons.Users className="w-4 h-4 text-indigo-600" />
+            </button>
+            <button
+              onClick={() => setActiveTab('orders')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">View orders</span>
+              <Icons.ShoppingCart className="w-4 h-4 text-indigo-600" />
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">System settings</span>
+              <Icons.Settings className="w-4 h-4 text-indigo-600" />
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
@@ -671,10 +782,67 @@ export default function AdminPage() {
             {/* Right side - User Info & Actions */}
             <div className="flex items-center gap-3">
               {/* Notification Bell */}
-              <button className="relative p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all">
-                <Icons.Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-indigo-600"></span>
-              </button>
+              <div className="relative" ref={notificationRef}>
+                <button
+                  onClick={() => setNotificationOpen((prev) => !prev)}
+                  className="relative p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                  aria-label="Notifications"
+                >
+                  <Icons.Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] px-1 h-[18px] text-[10px] font-semibold bg-rose-500 text-white rounded-full ring-2 ring-indigo-600 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                {notificationOpen && (
+                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Notifications</p>
+                        <p className="text-xs text-slate-500">Admin alerts & updates</p>
+                      </div>
+                      <button
+                        onClick={markAllNotificationsRead}
+                        className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                      >
+                        Mark all read
+                      </button>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="p-6 text-center text-sm text-slate-500">
+                          You are all caught up.
+                        </div>
+                      ) : (
+                        notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            onClick={() => markNotificationRead(notification.id)}
+                            className="w-full text-left px-4 py-3 flex gap-3 hover:bg-slate-50 transition-colors"
+                          >
+                            <div className={`mt-0.5 h-9 w-9 rounded-full ring-1 flex items-center justify-center ${notificationAccent(notification.type)}`}>
+                              <Icons.Sparkles className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className={`text-sm font-semibold ${notification.read ? 'text-slate-700' : 'text-slate-900'}`}>
+                                  {notification.title}
+                                </p>
+                                <span className="text-[11px] text-slate-400">{notification.time}</span>
+                              </div>
+                              <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
+                              {!notification.read && (
+                                <span className="inline-flex mt-2 text-[11px] font-medium text-rose-600">New</span>
+                              )}
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* User Profile */}
               <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-white/20">

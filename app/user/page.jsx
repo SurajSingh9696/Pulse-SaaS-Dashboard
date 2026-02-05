@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { userData } from '@/lib/data/userData';
@@ -42,6 +42,34 @@ export default function UserPage() {
   const [analyticsChartData, setAnalyticsChartData] = useState(null);
   const [billing, setBilling] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 'user-notif-1',
+      title: 'Invoice ready',
+      description: 'Your February invoice is ready to download.',
+      time: '5m ago',
+      read: false,
+      type: 'info'
+    },
+    {
+      id: 'user-notif-2',
+      title: 'Usage alert',
+      description: 'You have used 80% of your monthly limit.',
+      time: '2h ago',
+      read: false,
+      type: 'warning'
+    },
+    {
+      id: 'user-notif-3',
+      title: 'New feature',
+      description: 'Explore the new analytics export tool.',
+      time: 'Yesterday',
+      read: true,
+      type: 'neutral'
+    }
+  ]);
+  const notificationRef = useRef(null);
   
   const router = useRouter();
   const { branding, navigation } = userData;
@@ -55,6 +83,19 @@ export default function UserPage() {
       fetchData();
     }
   }, [activeTab, user]);
+
+  useEffect(() => {
+    if (!notificationOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notificationOpen]);
 
   const checkAuth = async () => {
     try {
@@ -183,6 +224,29 @@ export default function UserPage() {
     }
   };
 
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
+
+  const markAllNotificationsRead = () => {
+    setNotifications((prev) => prev.map((notification) => ({ ...notification, read: true })));
+  };
+
+  const markNotificationRead = (id) => {
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+  };
+
+  const notificationAccent = (type) => {
+    const accents = {
+      info: 'bg-blue-50 text-blue-700 ring-blue-200',
+      warning: 'bg-amber-50 text-amber-700 ring-amber-200',
+      neutral: 'bg-slate-50 text-slate-700 ring-slate-200'
+    };
+    return accents[type] || accents.neutral;
+  };
+
   const renderIcon = (iconName) => {
     const Icon = Icons[iconName.split('-').map((w, i) => 
       i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)
@@ -237,6 +301,53 @@ export default function UserPage() {
             </div>
           );
         })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-blue-100">Plan status</p>
+              <h4 className="text-2xl font-semibold mt-2">{user?.plan || 'Starter'} plan</h4>
+              <p className="text-xs text-blue-100 mt-2">Renewal on Mar 1, 2026</p>
+            </div>
+            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+              <Icons.CreditCard className="w-6 h-6" />
+            </div>
+          </div>
+        </div>
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900">Quick actions</h3>
+              <p className="text-xs text-slate-500">Manage your account faster</p>
+            </div>
+            <Icons.Zap className="w-5 h-5 text-blue-500" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button
+              onClick={() => setActiveTab('billing')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">View billing</span>
+              <Icons.Receipt className="w-4 h-4 text-blue-600" />
+            </button>
+            <button
+              onClick={() => setActiveTab('analytics')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">Open analytics</span>
+              <Icons.LineChart className="w-4 h-4 text-blue-600" />
+            </button>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="flex items-center justify-between px-4 py-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+            >
+              <span className="text-sm font-medium text-slate-700">Update settings</span>
+              <Icons.Settings className="w-4 h-4 text-blue-600" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
@@ -602,10 +713,67 @@ export default function UserPage() {
             {/* Right side - User Info & Actions */}
             <div className="flex items-center gap-3">
               {/* Notification Bell */}
-              <button className="relative p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all">
-                <Icons.Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-blue-600"></span>
-              </button>
+              <div className="relative" ref={notificationRef}>
+                <button
+                  onClick={() => setNotificationOpen((prev) => !prev)}
+                  className="relative p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all"
+                  aria-label="Notifications"
+                >
+                  <Icons.Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[18px] px-1 h-[18px] text-[10px] font-semibold bg-rose-500 text-white rounded-full ring-2 ring-blue-600 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                {notificationOpen && (
+                  <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">Notifications</p>
+                        <p className="text-xs text-slate-500">Account updates & alerts</p>
+                      </div>
+                      <button
+                        onClick={markAllNotificationsRead}
+                        className="text-xs font-medium text-blue-600 hover:text-blue-700"
+                      >
+                        Mark all read
+                      </button>
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="p-6 text-center text-sm text-slate-500">
+                          You are all caught up.
+                        </div>
+                      ) : (
+                        notifications.map((notification) => (
+                          <button
+                            key={notification.id}
+                            onClick={() => markNotificationRead(notification.id)}
+                            className="w-full text-left px-4 py-3 flex gap-3 hover:bg-slate-50 transition-colors"
+                          >
+                            <div className={`mt-0.5 h-9 w-9 rounded-full ring-1 flex items-center justify-center ${notificationAccent(notification.type)}`}>
+                              <Icons.BellRing className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between gap-2">
+                                <p className={`text-sm font-semibold ${notification.read ? 'text-slate-700' : 'text-slate-900'}`}>
+                                  {notification.title}
+                                </p>
+                                <span className="text-[11px] text-slate-400">{notification.time}</span>
+                              </div>
+                              <p className="text-xs text-slate-500 mt-1">{notification.description}</p>
+                              {!notification.read && (
+                                <span className="inline-flex mt-2 text-[11px] font-medium text-rose-600">New</span>
+                              )}
+                            </div>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* User Profile */}
               <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-white/20">
